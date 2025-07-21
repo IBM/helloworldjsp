@@ -30,7 +30,7 @@ Add the application to the `dropins` folder and then access at <http://localhost
    ```
     1. Wait for the message, "server is ready to run a smarter planet". For example:
        ```
-       CWWKF0011I: The helloworldjspServer server is ready to run a smarter planet. The helloworldjspServer server started in 1.023 seconds.
+       CWWKF0011I: The server1 server is ready to run a smarter planet. The server1 server started in 1.023 seconds.
        ```
     1. Open your browser to the HTTP or HTTPS page:
         * <http://localhost:9080/>
