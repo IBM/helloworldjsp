@@ -14,7 +14,7 @@
 
 FROM icr.io/appcafe/websphere-liberty:kernel-java17-openj9-ubi
 
-ARG VERBOSE=true
+ARG VERBOSE=false
 
 COPY --chown=default:root target/liberty/wlp/usr/servers/helloworldjspServer/* /config/
 
@@ -24,5 +24,3 @@ COPY --chown=default:root target/helloworldjsp.war /config/apps
 
 # This script will create an image that's fit-for-purpose and apply interim fixes (if any)
 RUN configure.sh
-
-RUN checkpoint.sh beforeAppStart
