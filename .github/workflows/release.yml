@@ -31,6 +31,6 @@ jobs:
             --request POST \
             --url https://uploads.github.com/repos/${{github.repository}}/releases/${RELEASE}/assets?name=helloworldjsp.war \
             --header "Accept: application/vnd.github.v3+json" \
-            --header "Content-Type: $(file -b --mime-type target/helloworldjsp.war)" \
+            --header "Content-Type: $(file -b --mime-type war/target/helloworldjsp.war)" \
             --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            --data-binary @target/helloworldjsp.war
+            --data-binary @war/target/helloworldjsp.war
