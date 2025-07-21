@@ -21,7 +21,7 @@ server.xml: https://openliberty.io/docs/latest/reference/config/server-configura
     password (optionally encrypted):
     https://openliberty.io/docs/latest/reference/feature/transportSecurity.html
 
-    We choose the latter for more flexibility. The value must be a minimum
+    We choose the latter for more flexibility. The password must be a minimum
     of 6 characters (see CWPKI0808E).
   -->
   <variable name="keystore_password" defaultValue="changeme" />

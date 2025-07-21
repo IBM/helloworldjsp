@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- (C) Copyright IBM Corporation 2024.
+ (C) Copyright IBM Corporation 2025.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 >
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.example</groupId>
-  <artifactId>helloworldjsp</artifactId>
-  <packaging>war</packaging>
+  <artifactId>helloworldjsppom</artifactId>
+  <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
 
   <properties>
@@ -30,164 +30,22 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <version.javax.servlet-api>3.0.1</version.javax.servlet-api>
-    <version.liberty.maven.plugin>3.11.1</version.liberty.maven.plugin>
-    <version.maven-war-plugin>3.4.0</version.maven-war-plugin>
-    <version.maven-compiler-plugin>3.13.0</version.maven-compiler-plugin>
-    <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
-
     <!--
     https://github.com/OpenLiberty/ci.maven/blob/main/docs/installation-configuration.md#using-maven-artifact
+    https://github.com/OpenLiberty/ci.maven/blob/main/docs/common-server-parameters.md
     -->
-
-    <!-- WebSphere Liberty -->
     <liberty.runtime.groupId>com.ibm.websphere.appserver.runtime</liberty.runtime.groupId>
     <liberty.runtime.artifactId>wlp-kernel</liberty.runtime.artifactId>
-
-    <!-- Open Liberty -->
-    <!--
-    <liberty.runtime.groupId>io.openliberty</liberty.runtime.groupId>
-    <liberty.runtime.artifactId>openliberty-kernel</liberty.runtime.artifactId>
-    -->
-
-    <!--
-      liberty.var.* properties generate configDropins/overrides/liberty-plugin-variable-config.xml
-      https://github.com/OpenLiberty/ci.maven/blob/main/docs/common-server-parameters.md
-    -->
-
-    <!-- Test dependencies -->
-    <version.junit-jupiter-engine>5.10.2</version.junit-jupiter-engine>
-    <version.httpclient5>5.3.1</version.httpclient5>
-    <version.slf4j-api>2.0.12</version.slf4j-api>
-    <version.slf4j-jdk14>2.0.12</version.slf4j-jdk14>
-    <version.maven-failsafe-plugin>3.2.5</version.maven-failsafe-plugin>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${version.javax.servlet-api}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- Test -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${version.junit-jupiter-engine}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents.client5</groupId>
-      <artifactId>httpclient5</artifactId>
-      <version>${version.httpclient5}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${version.slf4j-api}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>${version.slf4j-jdk14}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>war</module>
+  </modules>
 
   <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>${version.maven-war-plugin}</version>
-        <configuration>
-          <packagingExcludes>pom.xml</packagingExcludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>io.openliberty.tools</groupId>
-        <artifactId>liberty-maven-plugin</artifactId>
-        <version>${version.liberty.maven.plugin}</version>
-        <configuration>
-          <serverName>${project.artifactId}Server</serverName>
-          <!--
-          https://openliberty.io/docs/latest/reference/command/server-package.html#_options
-          -->
-          <include>minify,runnable</include>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${version.maven-failsafe-plugin}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.maven-compiler-plugin}</version>
-        <configuration>
-          <compilerArgument>-Xlint:-options</compilerArgument>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${version.maven-antrun-plugin}</version>
-        <executions>
-          <execution>
-            <phase>deploy</phase>
-            <configuration>
-              <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                <echo level="info" message="Building container image ${project.artifactId}" />
-                <exec dir="${project.basedir}" executable="podman" failonerror="true">
-                  <arg value="build" />
-                  <arg value="--platform"/>
-                  <arg value="linux/amd64"/>
-                  <arg value="--cap-add"/>
-                  <arg value="CHECKPOINT_RESTORE"/>
-                  <arg value="--cap-add" />
-                  <arg value="SYS_PTRACE" />
-                  <arg value="--cap-add" />
-                  <arg value="SETPCAP" />
-                  <arg value="--security-opt" />
-                  <arg value="seccomp=unconfined" />
-                  <arg value="--file" />
-                  <arg value="Containerfile" />
-                  <arg value="-t" />
-                  <arg value="${project.artifactId}" />
-                  <arg value="." />
-                </exec>
-
-                <echo level="info" message="==================" />
-                <echo level="info" message="Created local container image ${project.artifactId}" />
-                <echo level="info" message="To run this image:" />
-                <echo level="info" message="podman run --privileged --rm --rm -p 9080:9080 -p 9443:9443 -it ${project.artifactId}" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-
     <!--
-      Mapping Liberty goals to the Maven default build lifecycle directly
-      is easier than using a parent POM in case a project ever needs
-      a different parent POM.
+      Sub-modules can only have one parent POM (which we want to be this
+      POM), so bring in Liberty goals explicitly:
       https://github.com/OpenLiberty/ci.maven/blob/main/docs/parent-pom.md
     -->
     <pluginManagement>
@@ -195,7 +53,7 @@
         <plugin>
           <groupId>io.openliberty.tools</groupId>
           <artifactId>liberty-maven-plugin</artifactId>
-          <version>${version.liberty.maven.plugin}</version>
+          <version>3.11.4</version>
           <executions>
             <execution>
               <id>stop-before-clean</id>
@@ -248,16 +106,6 @@
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <configuration>
-            <!--
-              Disable the default deploy plugin so that we can optionally
-              use the deploy phase to build the container.
-            -->
-            <skip>true</skip>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
