@@ -23,7 +23,7 @@ Add the application to the `dropins` folder and then access at <http://localhost
    ```
    mvn clean install
    ```
-    1. The file should be under `target/helloworldjsp.war`
+    1. The file should be under `war/target/helloworldjsp.war`
 1. Or build and run Liberty:
    ```
    mvn clean install liberty:dev
